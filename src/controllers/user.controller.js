@@ -47,4 +47,35 @@ const findById = async (req, res) => {
     res.send(user)
 }
 
-module.exports = { create, findAll, findById }
+const update = async (req, res) => {
+    const { name, username, email, password, avatar } = req.body
+
+    if (!name && !username && !email && !password) {
+        return (res.status(400).send({ Message: "Inserte o campo a ser modoficado" }))
+    }
+
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return (res.status(400).send({ mesage: "ID inválido" }))
+    }
+
+    const user = await userService.findByIdService(id)
+
+    if (!user) {
+        return (res.status(400).send({ mesage: "Usuário não encontrado" }))
+    }
+
+    await userService.updateService(
+        id,
+        name,
+        username,
+        email,
+        password,
+        avatar
+    )
+
+    res.send({ mesage: "Usuário atualizado com sucesso" })
+}
+
+
+module.exports = { create, findAll, findById, update }
